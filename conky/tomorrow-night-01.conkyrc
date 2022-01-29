@@ -1,0 +1,148 @@
+--[[
+##########################################
+##  tomorrow-night-01.conkyrc (XMonad)  ##
+##########################################
+]]
+
+conky.config = {
+
+	--Various settings
+	background = true, 							-- forked to background
+
+	double_buffer = true,						-- Use the Xdbe extension? (eliminates flicker)
+	if_up_strictness = 'address',				-- how strict if testing interface is up - up, link or address
+	net_avg_samples = 2,						-- The number of samples to average for net data
+	no_buffers = true,							-- Subtract (file system) buffers from used memory?
+	temperature_unit = 'fahrenheit',			-- fahrenheit or celsius
+	text_buffer_size = 2048,					-- size of buffer for display of content of large variables - default 256
+	update_interval = 1,						-- update interval
+	imlib_cache_size = 0,                       -- disable image cache to get a new spotify cover per song
+
+	-- Placement (Conky on MIDDLE of THREE monitors at 1920x1080)
+	--alignment = 'top_left',		                -- top_left,top_middle,top_right,bottom_left,bottom_middle,bottom_right,
+	--gap_x = 3540,                               -- pixels between right or left border
+	--gap_y = 70,									-- pixels between bottom or left border
+
+    -- Placement (For SINGLE monitor users!)
+	alignment = 'top_right',		            -- top_left,top_middle,top_right,bottom_left,bottom_middle,bottom_right,
+	gap_x = 50,								-- pixels between right or left border
+	gap_y = 70,								-- pixels between bottom or left border
+
+    -- Size
+    minimum_height = 200,						-- minimum height of window
+	minimum_width = 260,						-- minimum width of window
+	maximum_width = 270,						-- maximum width of window
+
+	--Graphical
+	border_inner_margin = 5, 					-- margin between border and text
+	border_outer_margin = 5, 					-- margin between border and edge of window
+	border_width = 0, 							-- border width in pixels
+	default_bar_width = 260,					-- default is 0 - full width
+	default_bar_height = 10,					-- default is 6
+	default_gauge_height = 25,					-- default is 25
+	default_gauge_width =40,					-- default is 40
+	default_graph_height = 40,					-- default is 25
+	default_graph_width = 153,					-- default is 0 - full width
+	default_shade_color = '#000000',			-- default shading colour
+	default_outline_color = '#000000',			-- default outline colour
+	draw_borders = false,						-- draw borders around text
+	draw_graph_borders = true,					-- draw borders around graphs
+	draw_shades = false,						-- draw shades
+	draw_outline = false,						-- draw outline
+	stippled_borders = 0,						-- dashing the border
+
+	--Textual
+	format_human_readable = true,				-- KiB, MiB rather then number of bytes
+	font  = 'Source Code Pro:bold:size=9',  	-- the default font used
+	font2 = 'Raleway:bold:size=30',         	-- font for the time
+	font3 = 'Ubuntu:size=14',               	-- font for the date
+	font4 = 'Raleway:bold:size=9',              -- font for the keybindings heading
+	--font5 = 'Roboto:style=Medium 14, icomoon:style=Regular 14'                        -- font for icons
+	font5='Fantasque Sans Mono:bold:size=12',
+	max_text_width = 0,							-- 0 will make sure line does not get broken if width too smal
+	max_user_text = 16384,						-- max text in conky default 16384
+	override_utf8_locale = true,				-- force UTF8 requires xft
+	short_units = true,							-- shorten units from KiB to k
+	top_name_width = 21,						-- width for $top name value default 15
+	top_name_verbose = false,					-- If true, top name shows the full command line of  each  process - Default value is false.
+	uppercase = false,							-- uppercase or not
+	use_spacer = 'none',						-- adds spaces around certain objects to align - default none
+	use_xft = true,								-- xft font - anti-aliased font
+	xftalpha = 1,								-- alpha of the xft font - between 0-1
+
+	--Windows
+	own_window = true,							-- create your own window to draw
+	own_window_argb_value = 255,			    -- real transparency - composite manager required 0-255
+	own_window_argb_visual = true,				-- use ARGB - composite manager required
+	own_window_class = 'Conky',					-- manually set the WM_CLASS name for use with xprop
+	own_window_colour = '#1d1f21',				-- set colour if own_window_transparent no
+	own_window_transparent = false,				-- if own_window_argb_visual is true sets background opacity 0%
+	own_window_title = 'i3_conky',			-- set the name manually
+	own_window_type = 'override',				-- if own_window true options are: normal/override/dock/desktop/panel
+	own_window_hints = 'undecorated,below,above,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
+
+	--Colors (Tomorrow Night)
+	color0 = '#b294bb',
+	color1 = '#FF0000',
+	color2 = '#3e5570',
+	color3 = '#cccccc',
+	color4 = '#D9BC83',
+	color5 = '#00BFFF',                         --teal
+	color6 = '#FFFFFF',                         --white
+
+	--Signal Colours
+	color7 = '#C0FF00',  						--green
+	color8 = '#FFA726',  						--orange
+	color9 = '#F1544B',  						--firebrick
+
+};
+
+conky.text = [[
+${alignc}${color0}${font2}${time %H:%M}${font}
+${voffset 6}${alignc}${color0}${font3}${time %b %d, %Y}${font}${color}
+${voffset 6}${alignc}${color5}${font5}${exec ~/.config/i3/scripts/openweather}${font}${color}
+${color5}${font Roboto:size=10}${voffset 2}S Y S T E M   ${hr 2}${font}${color}
+${color2}Hostname:${color} ${alignr}${nodename}
+${color2}OS: $alignr ${color3}${execi 6000 lsb_release -d| awk '{$1=""; print $0}'}
+${color2}Kernel: $alignr ${color3} $kernel
+${color2}Uptime:${color} ${alignr}${uptime}
+${color5}${font Roboto:size=10}P R O C E S S O R S  ${hr 2}${font}${color}
+${color2}CPU Name:${color} $alignr${execi 1000 cat /proc/cpuinfo | grep 'model name' | sed -e 's/model name.*: //'| uniq | cut -c 1-17} 8C
+${color2}CPU Freq:${color} $alignr${freq}MHz
+${color2}CPU Temp:${color} $alignr ${exec sensors | grep 'Package id' | awk '{print $4}' | sed 's/+\.*//'}
+${color2}CPU Usage: ${color} $alignr ${cpu}%
+${color}${cpubar cpu0 15,270}
+${color2}CPU Core 1: ${color} ${alignr}${offset -10}${cpu cpu1}% ${alignr}${cpubar cpu1 10,130}
+${color2}CPU Core 2: ${color} ${alignr}${offset -10}${cpu cpu2}% ${alignr}${cpubar cpu2 10,130}
+${color2}CPU Core 3: ${color} ${alignr}${offset -10}${cpu cpu3}% ${alignr}${cpubar cpu3 10,130}
+${color2}CPU Core 4: ${color} ${alignr}${offset -10}${cpu cpu4}% ${alignr}${cpubar cpu4 10,130}
+${color2}CPU Core 5: ${color} ${alignr}${offset -10}${cpu cpu5}% ${alignr}${cpubar cpu5 10,130}
+${color2}CPU Core 6: ${color} ${alignr}${offset -10}${cpu cpu6}% ${alignr}${cpubar cpu6 10,130}
+${color2}CPU Core 7: ${color} ${alignr}${offset -10}${cpu cpu7}% ${alignr}${cpubar cpu7 10,130}
+${color2}CPU Core 8: ${color} ${alignr}${offset -10}${cpu cpu8}% ${alignr}${cpubar cpu8 10,130}
+${color7}Top Processes ${goto 165}CPU% ${goto 245}Mem% 
+${color}${top name 1} ${goto 150}${top cpu 1} ${goto 230}${top mem 1}
+${color}${top name 2} ${goto 150}${top cpu 2} ${goto 230}${top mem 2}
+${color5}${font Roboto:size=10}M E M O R Y   ${hr 2}${font}${color}
+${color2}Usage ${color3}$memperc%  ${goto 182}${color2}Total ${color3}$memmax
+${color2}Used ${color3}$mem ${goto 190}${color2}Free ${color3}$memfree
+${color}${membar 15,270}
+${color7}Top Processes ${goto 165}CPU% ${goto 245}Mem%
+${color}${top_mem name 1}${alignr}${goto 150}${top_mem cpu 1} ${goto 230}${top_mem mem 1}
+${color}${top_mem name 2}${alignr}${goto 150}${top_mem cpu 2} ${goto 230}${top_mem mem 2}
+${color5}${font Roboto:size=10}G P U  ${hr 2}${font}${color}
+${color2}GPU Name:${color #FCAF3E} $alignr${exec nvidia-smi --query-gpu=gpu_name --format=csv,noheader,nounits}
+${color2}GPU Temp:${color} $alignr${execi 60 nvidia-settings -query [gpu:0]/GPUCoreTemp -t}°C
+${color2}GPU Utilization:${color} $alignr${exec nvidia-smi | grep % | cut -c 61-63} %
+${color2}VRAM Utilization: ${color} $alignr${exec nvidia-smi | grep % | cut -c 37-40} MB
+${color2}GPU Power Draw: ${color} $alignr${exec nvidia-smi | grep % | cut -c 21-23} W
+${color5}${font Roboto:size=10}D R I V E S   ${hr 2}${font}${color}
+${color7}/ NVMe ${color} ${alignr}${color2}Used ${color}${fs_used /} ${color2}Total ${color}${fs_size /}
+${color}${fs_bar 15,270}
+${color2}I/O Read:${color} ${alignr}${offset -10}${diskio_read /dev/nvme0n1p2}${alignr}${diskiograph_read nvme0n1p2 15,130}
+${color2}I/O Write:${color} ${alignr}${offset -10}${diskio_write /dev/nvme0n1p2}${alignr}${diskiograph_write nvme0n1p2 15,130}
+${color5}${color5}${font Roboto:size=10}N E T W O R K   ${hr 2}${font}${color}
+${if_up enp4s0}${color7}IP Address: ${color} ${alignr}${addrs enp4s0}${else}${color7}IP Address: ${color} ${alignr}${addrs wlo1}${endif}
+${color2}Eth Up:${color} ${alignr}${offset -10$}${upspeed enp4s0}${alignr}${upspeedgraph enp3s0 15,130}
+${color2}Eth Down:${color} ${alignr}${offset -10$}${downspeed enp4s0}${alignr}${downspeedgraph enp3s0 15,130}
+]];

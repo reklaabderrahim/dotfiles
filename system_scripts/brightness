@@ -1,0 +1,53 @@
+#!/usr/bin/bash
+
+# Brightness notification: dunst
+
+icon_path=/usr/share/pixmaps/sun.png
+
+# you can also use a better alternative : light 
+# sudo pacman -S light - and then light -G should output the current brightness
+# this implementation is using xbacklight
+
+function get_max_brightness {
+	tail -n 1 /sys/class/backlight/intel_backlight/max_brightness
+}
+
+function get_brightness {
+	tail -n 1 /sys/class/backlight/intel_backlight/brightness
+}
+
+function brightness_notification {
+    brightness=`get_brightness`
+    max_brightness=`get_max_brightness`
+
+    printf -v br_int %.0f "$brightness"
+    printf -v br_max_int %.0f "$max_brightness"
+    echo $br_int
+    echo $br_max_int
+}
+
+case $1 in
+    up)
+	    brightness_notification
+	    if [ $brightness -le $(($max_brightness - 10000)) ]; then
+		    echo $(($brightness + 10000)) > /sys/class/backlight/intel_backlight/brightness
+		    notify-send "Luminosité à : `get_brightness`"
+            else
+
+		    echo $max_brightness > /sys/class/backlight/intel_backlight/brightness
+		    notify-send "Luminosité à : `get_brightness`"
+	    fi
+        ;;
+    down)
+	    brightness_notification
+	    if [ $brightness -le $(($max_brightness - 80000)) ]; then
+		    notify-send "Luminosité à : `get_brightness`"
+            else
+		    echo $(($brightness - 10000)) > /sys/class/backlight/intel_backlight/brightness
+		    notify-send "Luminosité à : `get_brightness`"
+	    fi
+	    ;;
+    *)
+        echo "Usage: $0 up | down "
+        ;;
+esac

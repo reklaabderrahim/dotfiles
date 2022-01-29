@@ -1,0 +1,60 @@
+######################################################################################################
+############################################ IMAP SETTINGS ###########################################
+######################################################################################################
+
+set folder = "imaps://reklaabderrahim@hotmail.com@outlook.office365.com:993"
+set imap_user = "reklaabderrahim@hotmail.com"
+set imap_pass = "password"
+set imap_check_subscribed = yes
+set imap_list_subscribed = yes
+set timeout = 15
+set mail_check = 90
+set imap_keepalive = 180
+unset imap_passive
+
+
+######################################################################################################
+############################################ IDENTITY ###########################################
+######################################################################################################
+
+set from = "reklaabderrahim@hotmail.com"
+set realname = "Abderrahim Rekla"
+
+
+######################################################################################################
+############################################ SMTP SETTINGS ###########################################
+######################################################################################################
+
+set smtp_url = "smtp://reklaabderrahim@hotmail.com@smtp.office365.com:587"
+set smtp_pass = "password"
+set ssl_starttls = yes
+
+######################################################################################################
+############################################ Mailboxes ###########################################
+######################################################################################################
+
+set spoolfile = "+INBOX"
+mailboxes =INBOX =Sent =Drafts =Junk =Deleted
+set record = "+Sent"
+#set trash = "+Trash"
+set postponed = "+Drafts"
+
+######################################################################################################
+############################################ OTHER SETTINGS ###########################################
+######################################################################################################
+
+set editor = vim
+
+set sidebar_width=20
+set sidebar_visible=yes
+
+set header_cache = "~/.cache/mutt"
+
+set message_cachedir = "~/.cache/mutt"
+
+bind index,pager \CP sidebar-prev
+bind index,pager \CN sidebar-next
+bind index,pager \CI sidebar-open
+bind index,pager \CB sidebar-toggle-visible
+
+source /home/rekla/.config/mutt/mutt-colors-solarized-dark-256.muttrc
