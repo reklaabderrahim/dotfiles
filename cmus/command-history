@@ -1,6 +1,0 @@
-a ~/Musique
-clear
-help
-bind common <key> source
-bind common <key> set
-bind common <key> add
