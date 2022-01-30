@@ -3,7 +3,7 @@ import os
 import re
 import socket
 import subprocess
-from libqtile.config import Click, Drag, Group, KeyChord, Key, Match, Screen
+from libqtile.config import Click, Drag, Group, KeyChord, Key, Match, Screen, ScratchPad, DropDown
 from libqtile.command import lazy
 from libqtile import layout, bar, widget, hook, qtile
 from typing import List  # noqa: F401from typing import List  # noqa: F401
@@ -12,8 +12,6 @@ mod = "mod4"              # Sets mod key to SUPER/WINDOWS
 alt = "mod1"
 myTerm = "alacritty"      # My terminal of choice
 myBrowser = "qutebrowser" # My terminal of choice
-
-
 
 def window_to_previous_group(qtile):
     if qtile.currentWindow is not None:
@@ -37,6 +35,22 @@ def window_to_next_screen(qtile):
         group = qtile.screens[i + 1].group.name
         qtile.current_window.togroup(group)
 
+
+def to_urgent():
+    @lazy.function
+    def __inner(qtile):
+        cg = qtile.currentGroup
+        for group in qtile.groupMap.values():
+            if group == cg:
+                continue
+            if len([w for w in group.windows if w.urgent]) > 0:
+                qtile.currentScreen.setGroup(group)
+                break
+
+    return __inner
+
+
+
 def switch_screens(qtile):
     i = qtile.screens.index(qtile.current_screen)
     group = qtile.screens[i - 1].group
@@ -45,279 +59,205 @@ def switch_screens(qtile):
 
 keys = [
         ### The essentials
-         Key([mod], "Return",
-             lazy.spawn(myTerm),
-             desc="Launch terminal"
-             ),
-         Key([mod], "KP_Enter",
-             lazy.spawn('alacritty'),
-             desc="Launch terminal"
-             ),
-         Key([alt], "Return",
-             lazy.spawn("pamac-manager"),
-             desc="Pamac Manager"
-             ),
-         Key([mod, "shift"], "Return",
-             lazy.spawn("thunar"),
-             desc="Launch Thunar"
-             ),
-         Key([mod, "control"], "Return",
-             lazy.spawn("geany"),
-             desc="Launch Geany"
-             ),
-        Key([mod, "shift"], "d",
-             lazy.spawn("dmenu_run -i -nb '#191919' -nf '#fea63c' -sb '#fea63c' -sf '#191919' -fn 'DejaVuSansMono:bold:pixelsize=14'"),
-             desc='Run dmenu'
-             ),
-        Key([mod], "d",
-             lazy.spawn("rofi -modi drun -show drun -config ~/.config/rofi/rofidmenu.rasi"),
-             desc='Run rofi'
-             ),
-        Key([mod, "control"], "d",
-            lazy.spawn('nwggrid -p -o 0.4'),
-            desc="Run nwggrid"
-            ),
-        Key([mod], "t",
-             lazy.spawn("rofi -show window -config ~/.config/rofi/rofidmenu.rasi"),
-             desc='Show running applications'
-             ),
-         Key([mod], "w",
-             lazy.spawn("brave"),
-             desc='Google Chrome'
-             ),
-         Key([mod, "shift"], "w",
-             lazy.spawn("firefox"),
-             desc='Firefox'
-             ),
-         Key([mod, "control"], "w",
-             lazy.spawn(myBrowser),
-             desc='Qutebrowser'
-             ),
-         Key([mod], "space",
-             lazy.next_layout(),
-             desc='Toggle through layouts'
-             ),
-        Key([mod], "q",
-             lazy.window.kill(),
-             desc='Kill active window'
-             ),
-         Key([mod, "shift"], "r",
-             lazy.restart(),
-             desc='Restart Qtile'
-             ),
-        Key([mod, "control"], "r",
-            lazy.reload_config(),
-            desc="Reload the config"
-            ),
-        Key([mod], "r",
-            lazy.spawncmd(),
-            desc="Spawn a command using a prompt widget"
-            ),
-         Key([mod, "shift"], "q",
-             lazy.shutdown(),
-             desc='Shutdown Qtile'
-             ),
-         Key([mod, "shift"], "e",
-             lazy.spawn("/home/rekla/.config/qtile/scripts/powermenu"),
-             desc='Exit Menu'
-             ),
-         Key([alt, "control"], "l",
-             lazy.spawn("i3lock"),
-             desc='i3exit lock'
-             ),
+         Key([mod], "Return",lazy.spawn(myTerm),desc="Launch terminal"),
+         Key([mod], "KP_Enter",lazy.spawn('alacritty'),desc="Launch terminal"),
+         Key([alt], "Return",lazy.spawn("pamac-manager"),desc="Pamac Manager"),
+         Key([mod, "shift"], "Return",lazy.spawn("thunar"),desc="Launch Thunar"),
+         Key([mod, "control"], "Return",lazy.spawn("geany"),desc="Launch Geany"),
+         
+         Key([mod, "shift"], "d",lazy.spawn("dmenu_run -i -nb '#191919' -nf '#fea63c' -sb '#fea63c' -sf '#191919' -fn 'DejaVuSansMono:bold:pixelsize=14'"),desc='Run dmenu'),
+         Key([mod], "d",lazy.spawn("rofi -modi drun -show drun -config ~/.config/rofi/rofidmenu.rasi"),desc='Run rofi'),
+         Key([mod, "control"], "d",lazy.spawn('nwggrid -p -o 0.4'),desc="Run nwggrid"),
+        
+         Key([mod], "t",lazy.spawn("rofi -show window -config ~/.config/rofi/rofidmenu.rasi"),desc='Show running applications'),
+         
+         Key([mod], "w",lazy.spawn("brave"),desc='Run Brave'),
+         Key([mod, "shift"], "w",lazy.spawn("firefox"),desc='Firefox'),
+         Key([mod, "control"], "w",lazy.spawn(myBrowser),desc='Qutebrowser'),
+         
+         Key([mod], "space",lazy.next_layout(),desc='Next layout'),
+         Key([mod, "control"], "space",lazy.prev_layout(),desc='Previous layout'),
+         Key([mod, "shift"], "space",lazy.window.toggle_floating(),desc='toggle floating'),
+         
+         Key([mod], "q",lazy.window.kill(),desc='Kill active window'),
+         Key([mod, "shift"], "q",lazy.shutdown(),desc='Shutdown Qtile'),
+         
+         Key([mod], "r",lazy.spawncmd(),desc="Spawn a command using a prompt widget"),
+         Key([mod, "shift"], "r",lazy.restart(),desc='Restart Qtile'),
+         Key([mod, "control"], "r",lazy.reload_config(),desc="Reload the config"),
+     
+         Key([mod, "shift"], "e",lazy.spawn("/home/rekla/.config/qtile/scripts/powermenu"),desc='Exit Menu'),
+         
+         Key([alt, "control"], "l",lazy.spawn("i3lock"),desc='i3exit lock'),
 
          ### Switch focus to specific monitor (out of two)
-         Key([mod], "i",
-             lazy.to_screen(0),
-             desc='Keyboard focus to monitor 1'
-             ),
-         Key([mod], "o",
-             lazy.to_screen(1),
-             desc='Keyboard focus to monitor 2'
-             ),
-         ### Switch focus of monitors
-         Key([mod], "semicolon",
-             lazy.next_screen(),
-             desc='Move focus to next monitor'
-             ),
-         Key([mod], "comma",
-             lazy.prev_screen(),
-             desc='Move focus to prev monitor'
-             ),
-        # Move windows to different physical screens
-        Key([mod, "shift"], "semicolon", lazy.function(window_to_previous_screen)),
-        Key([mod, "shift"], "comma", lazy.function(window_to_next_screen)),
-        Key([mod, "shift"], "t", lazy.function(switch_screens)),
+         Key([mod], "comma",lazy.prev_screen(),desc='Move focus to prev monitor'),
+         Key([mod], "semicolon",lazy.next_screen(),desc='Move focus to next monitor'),
+         Key([mod, "control"], "comma",lazy.to_screen(0),desc='Keyboard focus to monitor 1'),
+         Key([mod, "control"], "semicolon",lazy.to_screen(1),desc='Keyboard focus to monitor 2'),      
+         
+         # Move windows to different physical screens
+         Key([mod, "shift"], "semicolon", lazy.function(window_to_previous_screen), desc="Move windows to previous screen"),
+         Key([mod, "shift"], "comma", lazy.function(window_to_next_screen), desc="Move windows to next screen"),
+         Key([mod, "shift"], "t", lazy.function(switch_screens), desc="Sxitch windows to next/previous screen"),
+         
+         Key([mod], "n",lazy.layout.normalize(),desc='normalize window size ratios'),
+         Key([mod], "m",lazy.layout.maximize(),desc='toggle window between minimum and maximum sizes'),
+         Key([mod], "f",lazy.window.toggle_fullscreen(),desc='toggle fullscreen'),
 
-         ### Treetab controls
-          Key([mod], "h",
-             lazy.layout.move_left(),
-             desc='Move up a section in treetab'
-             ),
-         Key([mod], "l",
-             lazy.layout.move_right(),
-             desc='Move down a section in treetab'
-             ),
-         ### Window controls
-         Key([mod], "j",
-             lazy.layout.down(),
-             desc='Move focus down in current stack pane'
-             ),
-         Key([mod], "k",
-             lazy.layout.up(),
-             desc='Move focus up in current stack pane'
-             ),
-         # CHANGE FOCUS
-         Key([mod], "Up", lazy.layout.up()),
-         Key([mod], "Down", lazy.layout.down()),
-         Key([mod], "Left", lazy.layout.left()),
-         Key([mod], "Right", lazy.layout.right()),
-        Key([mod], "n",
-             lazy.layout.normalize(),
-             desc='normalize window size ratios'
-             ),
-         Key([mod], "m",
-             lazy.layout.maximize(),
-             desc='toggle window between minimum and maximum sizes'
-             ),
-         Key([mod, "shift"], "space",
-             lazy.window.toggle_floating(),
-             desc='toggle floating'
-             ),
-         Key([mod], "f",
-             lazy.window.toggle_fullscreen(),
-             desc='toggle fullscreen'
-             ),
+         Key([mod, "shift"], "f", lazy.layout.flip(), desc="FLIP LAYOUT FOR MONADTALL/MONADWIDE"),
+
+         ### Layout control [h,l,j,k]
+         Key([mod], "h",lazy.layout.move_left(), lazy.layout.left(),desc='Move left / Move up a section in treetab'),
+         Key([mod], "l",lazy.layout.move_right(), lazy.layout.right(),desc='Move right / Move down a section in treetab'),
+         Key([mod], "j",lazy.layout.down(),desc='Move focus down in current stack pane'),
+         Key([mod], "k",lazy.layout.up(),desc='Move focus up in current stack pane'),
+         
+         Key([mod, "mod1"], "h", lazy.layout.previous(), lazy.layout.flip_left(), desc='Move up a section in stack / flip left BSP'),
+         Key([mod, "mod1"], "l", lazy.layout.next(), lazy.layout.flip_right(), desc='Move up a section in stack / flip right BSP'),
+         Key([mod, "mod1"], "j", lazy.layout.flip_down(),lazy.layout.section_down(), desc="flip down BSP / Move down a section in treetab"),
+         Key([mod, "mod1"], "k", lazy.layout.flip_up(),lazy.layout.section_up(), desc="flip up BSP / Move up a section in treetab"),
+         
+         Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="move left BSP"),
+         Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="move right BSP"),
+         Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="move down BSP"),
+         Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="move up BSP"),
+         
+         ### Layout control [Left,Right,Down,Up]
+         Key([mod], "Left",lazy.layout.move_left(), lazy.layout.left(),desc='Move left / Move up a section in treetab'),
+         Key([mod], "Right",lazy.layout.move_right(), lazy.layout.right(),desc='Move right / Move down a section in treetab'),
+         Key([mod], "Down",lazy.layout.down(),desc='Move focus down in current stack pane'),
+         Key([mod], "Up",lazy.layout.up(),desc='Move focus up in current stack pane'),
+         
+         Key([mod, "mod1"], "Left", lazy.layout.previous(), lazy.layout.flip_left(), desc='Move up a section in stack / flip left BSP'),
+         Key([mod, "mod1"], "Right", lazy.layout.next(), lazy.layout.flip_right(), desc='Move up a section in stack / flip right BSP'),
+         Key([mod, "mod1"], "Down", lazy.layout.flip_down(),lazy.layout.section_down(), desc="flip down BSP / Move down a section in treetab"),
+         Key([mod, "mod1"], "Up", lazy.layout.flip_up(),lazy.layout.section_up(), desc="flip up BSP / Move up a section in treetab"),
+         
+         Key([mod, "shift"], "Left", lazy.layout.shuffle_left(), desc="move left BSP"),
+         Key([mod, "shift"], "Right", lazy.layout.shuffle_right(), desc="move right BSP"),
+         Key([mod, "shift"], "Down", lazy.layout.shuffle_down(), desc="move down BSP"),
+         Key([mod, "shift"], "Up", lazy.layout.shuffle_up(), desc="move up BSP"),
+         
+        
+         ### Stack controls
+         Key([mod, "mod1"], "KP_Enter",lazy.layout.rotate(),lazy.layout.flip(),desc='Switch which side main pane occupies (XmonadTall)'),
+         Key([mod, "mod1"], "space",lazy.layout.next(),desc='Switch window focus to other pane(s) of stack'),
+         Key([mod, "mod1", "control"], "space",lazy.layout.toggle_split(),desc='Toggle between split and unsplit sides of stack'),
 
          # RESIZE UP, DOWN, LEFT, RIGHT
-        Key([mod, "control"], "l",
+         Key([mod, "control"], "l",
             lazy.layout.grow_right(),
             lazy.layout.grow(),
             lazy.layout.increase_ratio(),
             lazy.layout.delete(),
+            desc="resize right"
             ),
          Key([mod, "control"], "Right",
             lazy.layout.grow_right(),
             lazy.layout.grow(),
             lazy.layout.increase_ratio(),
             lazy.layout.delete(),
+            desc="resize right"
             ),
-        Key([mod, "control"], "h",
+         Key([mod, "control"], "h",
             lazy.layout.grow_left(),
             lazy.layout.shrink(),
             lazy.layout.decrease_ratio(),
             lazy.layout.add(),
+            desc="resize left"
             ),
-        Key([mod, "control"], "Left",
+         Key([mod, "control"], "Left",
             lazy.layout.grow_left(),
             lazy.layout.shrink(),
             lazy.layout.decrease_ratio(),
             lazy.layout.add(),
+            desc="resize left"
             ),
-        Key([mod, "control"], "k",
+         Key([mod, "control"], "k",
             lazy.layout.grow_up(),
             lazy.layout.grow(),
             lazy.layout.decrease_nmaster(),
+            desc="resize up"
             ),
-        Key([mod, "control"], "Up",
+         Key([mod, "control"], "Up",
             lazy.layout.grow_up(),
             lazy.layout.grow(),
             lazy.layout.decrease_nmaster(),
-            ),
+            desc="resize up"
+            ),  
         Key([mod, "control"], "j",
             lazy.layout.grow_down(),
             lazy.layout.shrink(),
             lazy.layout.increase_nmaster(),
+            desc="resize down"
             ),
         Key([mod, "control"], "Down",
             lazy.layout.grow_down(),
             lazy.layout.shrink(),
             lazy.layout.increase_nmaster(),
+            desc="resize down"
             ),
 
-        Key([mod, "mod1"], "h", lazy.layout.previous()), # Stack
-        Key([mod, "mod1"], "l", lazy.layout.next()),     # Stack
-
-
-        # FLIP LAYOUT FOR MONADTALL/MONADWIDE
-        Key([mod, "shift"], "f", lazy.layout.flip()),
-
-        # FLIP LAYOUT FOR BSP
-        Key([mod, "mod1"], "k", lazy.layout.flip_up()),
-        Key([mod, "mod1"], "j", lazy.layout.flip_down()),
-        Key([mod, "mod1"], "l", lazy.layout.flip_right()),
-        Key([mod, "mod1"], "h", lazy.layout.flip_left()),
-
-        # MOVE WINDOWS UP OR DOWN BSP LAYOUT
-        Key([mod, "shift"], "k", lazy.layout.shuffle_up()),
-        Key([mod, "shift"], "j", lazy.layout.shuffle_down()),
-        Key([mod, "shift"], "h", lazy.layout.shuffle_left()),
-        Key([mod, "shift"], "l", lazy.layout.shuffle_right()),
-
-         ### Treetab controls
-        Key([mod, "control"], "k",
-            lazy.layout.section_up(),
-            desc='Move up a section in treetab'
-            ),
-        Key([mod, "control"], "j",
-            lazy.layout.section_down(),
-            desc='Move down a section in treetab'
-        ),
-
-
-
-        # MOVE WINDOWS UP OR DOWN MONADTALL/MONADWIDE LAYOUT
-         Key([mod, "shift"], "Up", lazy.layout.shuffle_up()),
-         Key([mod, "shift"], "Down", lazy.layout.shuffle_down()),
-         Key([mod, "shift"], "Left", lazy.layout.swap_left()),
-         Key([mod, "shift"], "Right", lazy.layout.swap_right()),
-        ### Stack controls
-        Key([mod, "mod1"], "KP_Enter",
-             lazy.layout.rotate(),
-             lazy.layout.flip(),
-             desc='Switch which side main pane occupies (XmonadTall)'
-             ),
-        Key([mod, "mod1"], "space",
-             lazy.layout.next(),
-             desc='Switch window focus to other pane(s) of stack'
-             ),
-        Key([mod, "mod1", "control"], "space",
-             lazy.layout.toggle_split(),
-             desc='Toggle between split and unsplit sides of stack'
-             ),
 
         # INCREASE/DECREASE BRIGHTNESS
         Key([], "XF86MonBrightnessUp", lazy.spawn("/home/rekla/.config/system_scripts/brightness up")),
         Key([], "XF86MonBrightnessDown", lazy.spawn("/home/rekla/.config/system_scripts/brightness down")),
 
        # Media hotkeys
-        Key([], 'XF86AudioRaiseVolume',
-            lazy.spawn('amixer -D pulse sset Master 1%+'),
-            desc='Raise volume'
-            ),
-        Key([], 'XF86AudioLowerVolume',
-            lazy.spawn('amixer -D pulse sset Master 1%-'),
-            desc='Decrease volume'
-            ),
-        Key([], 'XF86AudioMute',
-            lazy.spawn('pamixer -t'),
-            desc='Mute volume'
-            ),
+        Key([], 'XF86AudioRaiseVolume',lazy.spawn('amixer -D pulse sset Master 5%+'),desc='Raise volume'),
+        Key([], 'XF86AudioLowerVolume',lazy.spawn('amixer -D pulse sset Master 5%-'),desc='Decrease volume'),
+        Key([], 'XF86AudioMute',lazy.spawn('pamixer -t'),desc='Mute volume'),
         Key([], "XF86AudioPlay", lazy.spawn("playerctl play-pause")),
         Key([], "XF86AudioNext", lazy.spawn("playerctl next")),
         Key([], "XF86AudioPrev", lazy.spawn("playerctl previous")),
         Key([], "XF86AudioStop", lazy.spawn("playerctl stop")),
-# SCREENSHOTS
 
-        Key([], "Print", lazy.spawn('flameshot full -p ~/Images')),
-        Key(["control"], "Print", lazy.spawn('flameshot full -p ~/Images')),
+		# SCREENSHOTS
+        Key([], "Print", lazy.spawn('flameshot screen -p /home/rekla/Images')),
+        Key(["control"], "Print", lazy.spawn('flameshot full -p /home/rekla/Images')),
 
         # Qtile CMD
-        Key([mod], 'F1',
-            lazy.spawn('/home/rekla/.config/qtile/scripts/dqtile-cmd.sh'),
-            desc='Qtile CMD'
-            ),
-        Key([mod], 'F2', lazy.spawn('~/.config/qtile/scripts/picom-toggle.sh')),
+        Key([mod], 'F1',lazy.spawn('/home/rekla/.config/qtile/scripts/dqtile-cmd.sh'),desc='Qtile CMD'),
+        Key([mod], 'F2', lazy.spawn('/home/rekla/.config/qtile/scripts/picom-toggle.sh')),
+        Key([mod], 'F6', lazy.spawn('/home/rekla/.config/qtile/scripts/keyhint_script.sh')),
+        Key([mod], 'F10', to_urgent()),
+
+         # Emacs programs launched using the key chord CTRL+e followed by 'key'
+         KeyChord(["control"],"e", [
+             Key([], "e",
+                 lazy.spawn("emacsclient -c -a 'emacs'"),
+                 desc='Launch Emacs'
+                 ),
+             Key([], "b",
+                 lazy.spawn("emacsclient -c -a 'emacs' --eval '(ibuffer)'"),
+                 desc='Launch ibuffer inside Emacs'
+                 ),
+             Key([], "d",
+                 lazy.spawn("emacsclient -c -a 'emacs' --eval '(dired nil)'"),
+                 desc='Launch dired inside Emacs'
+                 ),
+             Key([], "i",
+                 lazy.spawn("emacsclient -c -a 'emacs' --eval '(erc)'"),
+                 desc='Launch erc inside Emacs'
+                 ),
+             Key([], "m",
+                 lazy.spawn("emacsclient -c -a 'emacs' --eval '(mu4e)'"),
+                 desc='Launch mu4e inside Emacs'
+                 ),
+             Key([], "n",
+                 lazy.spawn("emacsclient -c -a 'emacs' --eval '(elfeed)'"),
+                 desc='Launch elfeed inside Emacs'
+                 ),
+             Key([], "s",
+                 lazy.spawn("emacsclient -c -a 'emacs' --eval '(eshell)'"),
+                 desc='Launch the eshell inside Emacs'
+                 ),
+             Key([], "v",
+                 lazy.spawn("emacsclient -c -a 'emacs' --eval '(+vterm/here nil)'"),
+                 desc='Launch vterm inside Emacs'
+                 )
+         ]),
 
          # Dmenu scripts launched using the key chord SUPER+p followed by 'key'
          KeyChord([mod], "p", [
@@ -363,10 +303,8 @@ group_keys = ["ampersand", "eacute", "quotedbl", "apostrophe", "parenleft", "min
 group_keyspad = ["KP_1", "KP_2", "KP_3", "KP_4", "KP_5", "KP_6", "KP_7", "KP_8", "KP_9", "KP_0"]
 
 group_labels = ["", "", "", "", "", "", "", "", "", "",]
-#group_labels = ["Web", "Edit/chat", "Image", "Gimp", "Meld", "Video", "Vb", "Files", "Mail", "Music",]
 
 group_layouts = ["monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "monadtall", "treetab", "floating"]
-#group_layouts = ["monadtall", "matrix", "monadtall", "bsp", "monadtall", "matrix", "monadtall", "bsp", "monadtall", "monadtall",]
 
 for i in range(len(group_keys)):
     groups.append(
@@ -381,8 +319,6 @@ for i, (k, group) in enumerate(zip(group_keys, groups)):
         Key([mod], k, lazy.group[group.name].toscreen()),
         Key([mod], "Tab", lazy.screen.next_group()),
         Key([mod, "shift" ], "Tab", lazy.screen.prev_group()),
-        Key(["mod1"], "Tab", lazy.screen.next_group()),
-        Key(["mod1", "shift"], "Tab", lazy.screen.prev_group()),
 
         # MOVE WINDOW TO SELECTED WORKSPACE 1-10 AND STAY ON WORKSPACE
         Key([mod, "control"], k, lazy.window.togroup(group.name)),
@@ -391,13 +327,18 @@ for i, (k, group) in enumerate(zip(group_keys, groups)):
     ])
 
 
-#keys.extend([
-#    Key([alt,"shift"],  "Left",  lazy.function(window_to_next_screen)),    
-#    Key([alt,"shift"],  "Right", lazy.function(window_to_previous_screen)),
-#    Key([alt,"control"],"Left",  lazy.function(window_to_next_group)),
-#    Key([alt,"control"],"Right", lazy.function(window_to_previous_group)),
-#])
+groups.append(
+    ScratchPad("scratchpad", [
+        # define a drop down terminal.
+        # it is placed in the upper third of screen by default.
+        DropDown("term", "/usr/bin/alacritty", opacity=0.88, height=0.55, width=0.80, ),
+    ]) )
 
+keys.extend([
+    # Scratchpad
+    # toggle visibiliy of above defined DropDown named "term"
+    Key([mod], 'F12', lazy.group['scratchpad'].dropdown_toggle('term'))
+])
 
 layout_theme = {"border_width": 2,
                 "margin": 8,
@@ -441,17 +382,6 @@ layouts = [
          ),
     layout.Floating(**layout_theme)
 ]
-
-#colors = [["#282c34", "#282c34"],
-#          ["#1c1f24", "#1c1f24"],
-#          ["#dfdfdf", "#dfdfdf"],
-#          ["#ff6c6b", "#ff6c6b"],
-#          ["#98be65", "#98be65"],
-#          ["#da8548", "#da8548"],
-#          ["#51afef", "#51afef"],
-#          ["#c678dd", "#c678dd"],
-#          ["#46d9ff", "#46d9ff"],
-#          ["#a9a1e1", "#a9a1e1"]]
 
 colors = [
             ["#282c34", "#282c34"],
@@ -532,7 +462,7 @@ def init_widgets_list():
                        active = colors[2],
                        inactive = colors[7],
                        rounded = False,
-                       highlight_color = colors[1],
+                       highlight_color = colors[21],
                        highlight_method = "line",
                        this_current_screen_border = colors[6],
                        this_screen_border = colors [4],

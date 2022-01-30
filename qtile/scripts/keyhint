@@ -1,0 +1,107 @@
+Launch terminal: +Return
+Launch terminal: +KP_Enter
+Pamac Manager: alt+Return
+Launch Thunar: +shift+Return
+Launch Geany: +control+Return
+Run dmenu: +shift+d
+Run rofi: +d	
+Run nwggrid: +control+d	
+Show running applications: +t
+Run Brave: +w
+Firefox: +shift+w
+Qutebrowser: +control+w
+Next layout: +space
+Previous layout: +control+space
+toggle floating: +shift+space
+Kill active window: +q
+Shutdown Qtile: +shift+q
+Spawn a command using a prompt widget: +r	
+Restart Qtile: +shift+r
+Reload the config: +control+r
+Exit Menu: +shift+e
+i3lock lock: alt+control+l
+Move focus to prev monitor: +comma
+Move focus to next monitor: +semicolon
+Keyboard focus to monitor 1: +control+comma
+Keyboard focus to monitor 2: +control+semicolon
+Move windows to previous screen: +shift+semicolon
+Move windows to next screen: +shift+comma
+Switch windows to next/previous screen: +shift+t
+normalize window size ratios: +n
+toggle window between minimum and maximum sizes: +m
+toggle fullscreen: +f
+FLIP LAYOUT FOR MONADTALL/MONADWIDE: +shift+f
+Move left / Move up a section in treetab: +h
+Move right / Move down a section in treetab: +l
+Move focus down in current stack pane: +j
+Move focus up in current stack pane: +k
+Move up a section in stack / flip left BSP: +Alt+h
+Move up a section in stack / flip right BSP: +Alt+l
+flip down BSP / Move down a section in treetab: +Alt+j
+flip up BSP / Move up a section in treetab: +Alt+k
+move left BSP: +shift+h
+move right BSP: +shift+l
+move down BSP: +shift+j
+move up BSP: +shift+k
+Move left / Move up a section in treetab: +Left+l
+Move right / Move down a section in treetab: +Right
+Move focus down in current stack pane: +Down
+focus up in current stack pane: +Up Move
+Move up a section in stack / flip left BSP: +Alt+Left
+Move up a section in stack / flip right BSP: +Alt+Right
+flip down BSP / Move down a section in treetab: +Alt+Down
+flip up BSP / Move up a section in treetab: +Alt+Up
+move left BSP: +shift+Left
+move right BSP: +shift+Right
+move down BSP: +shift+Down
+move up BSP: +shift+Up
+Switch which side main pane occupies XmonadTall: +Alt+KP_Enter
+Switch window focus to other panes of stack: +Alt+space
+Toggle between split and unsplit sides of stack: +Alt+control+space
+resize right: +control+l
+resize right: +control+Right 
+resize left: +control+h
+resize left: +control+Left
+resize up: +control+k
+resize up: +control+Up
+resize down: +control+j
+resize down: +control+Down
+brightness up: XF86MonBrightnessUp
+brightness down: XF86MonBrightnessDown
+Raise volume: XF86AudioRaiseVolume
+Decrease volume: XF86AudioLowerVolume
+Mute volume: XF86AudioMute
+play-pause: XF86AudioPlay
+next: XF86AudioNext
+previous: XF86AudioPrev
+stop: XF86AudioStop
+screen shot: Print
+full screen shot: control+Print
+Qtile CMD: +F1
+picom-toggle: +F2
+urgent workspace: +F10
+Launch Emacs: control+e
+Launch ibuffer inside Emacs: control+b
+Launch dired inside Emacs: control+d
+Launch erc inside Emacs: control+i
+Launch mu4e inside Emacs: control+m
+Launch elfeed inside Emacs: control+n
+Launch the eshell inside Emacs: control+s
+Launch vterm inside Emacs: control+v
+Choose a config file to edit: +p+e
+Take screenshots via dmenu: +p+i
+Kill processes via dmenu: +p+k
+A logout menu: +p+l
+Search manpages in dmenu: +p+m
+Search your qutebrowser bookmarks and quickmarks: +p+o
+Search reddit via dmenu: +p+r
+Search various search engines via dmenu: +p+s
+Navigate to WS: +WS
+Next WS: +Tab
+Previous WS: +shift+Tab
+MOVE WINDOW TO SELECTED WORKSPACE 1-10 AND STAY ON WORKSPACE: +control+k
+MOVE WINDOW TO SELECTED WORKSPACE 1-10 AND FOLLOW MOVED WINDOW TO WORKSPACE: +shift+k
+Terminal to scrashpad: +F12
+get_position: Mouse+Button1
+get_size: Mouse+Button3
+bring_to_front: Mouse+Button2

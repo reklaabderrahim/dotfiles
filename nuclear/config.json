@@ -1,0 +1,26 @@
+{
+	"lastFm": {},
+	"settings": {
+		"invidious.url": "https://invidious.snopyta.org",
+		"language": "fr",
+		"volume": 100
+	},
+	"playLists": [],
+	"favorites": {
+		"tracks": [],
+		"artists": [],
+		"albums": []
+	},
+	"downloads": [],
+	"equalizer": {
+		"selected": "Default"
+	},
+	"last-thumb-clean-date": 1643478130355,
+	"plugin": {
+		"selected": {
+			"metaProviders": "Discogs Metadata Provider",
+			"streamProviders": "Youtube",
+			"lyricsProviders": "Simple Lyrics Provider"
+		}
+	}
+}

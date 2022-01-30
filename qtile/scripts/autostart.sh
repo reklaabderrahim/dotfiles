@@ -2,6 +2,7 @@
 
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 picom --config ~/.config/picom/picom-blur.conf --experimental-backends &
+/usr/bin/emacs --daemon &
 dunst &
 flameshot &
 $HOME/.config/conky/launch.sh &

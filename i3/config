@@ -324,12 +324,12 @@ assign [class="Thunderbird"] $ws4
 assign [class="TelegramDesktop"] $ws5
 assign [class="jetbrains-idea"] $ws6
 assign [class="Code"] $ws7
-assign [class="(?!)Google-chrome"] $ws8
+assign [class="(?!)Brave-browser"] $ws8
 
 # automatic set focus new window if it opens on another workspace then the current:
 for_window [class=Xfce4-terminal] focus
 for_window [class=(?i)firefox] focus
-for_window [class=(?!)Google-chrome] focus
+for_window [class=(?!)Brave-browser] focus
 for_window [class=Thunar] focus
 for_window [class=Thunderbird] focus
 for_window [class=TelegramDesktop] focus
@@ -461,7 +461,7 @@ bindsym $mod+r mode "resize"
 #bindsym $mod+Shift+n exec ~/.config/i3/scripts/empty_workspace
 
 ## App shortcuts
-bindsym $mod+w exec /usr/bin/google-chrome-stable
+bindsym $mod+w exec brave
 bindsym $mod+Shift+w exec /usr/bin/firefox
 bindsym $mod+Shift+n exec /usr/bin/thunar
 bindsym $mod+Shift+i exec /usr/bin/intellij-idea-ultimate-edition
