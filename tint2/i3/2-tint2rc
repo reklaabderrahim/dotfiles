@@ -204,25 +204,25 @@ background_color_pressed = #d8d8d8 30
 border_color_pressed = #d8d8d8 30
 
 #-------------------------------------
-# Panel 1
-panel_items = :P:::P:P:P:P:P::T:C:E:E::B:PS:P:
+# Panel 2
+panel_items = :P:::T:C:
 panel_size = 100% 40
 panel_margin = 0 0
 panel_padding = 5 5
 panel_background_id = 8
-wm_menu = 1
+wm_menu = 2
 panel_dock = 0
 panel_pivot_struts = 0
 panel_position = bottom center horizontal
 panel_layer = normal
-panel_monitor = 3
+panel_monitor = 2
 panel_shrink = 0
 autohide = 0
 autohide_show_timeout = 0.3
 autohide_hide_timeout = 1.5
 autohide_height = 6
 strut_policy = follow_size
-panel_window_name = tint2_one
+panel_window_name = tint2_second
 disable_transparency = 1
 mouse_effects = 1
 font_shadow = 0

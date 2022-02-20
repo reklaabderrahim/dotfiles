@@ -41,7 +41,7 @@ floating_modifier $mod
 set $myTerm alacritty
 bindsym $mod+Return exec $myTerm
 
-set $myBrowser qutebrowser
+set $myBrowser brave
 bindsym $mod+Ctrl+w exec $myBrowser
 
 # kill focused window
@@ -71,29 +71,33 @@ bindsym $mod+Ctrl+Return exec pamac-manager
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
 ################################################################################################
 
-# volume
-#bindsym XF86AudioRaiseVolume exec amixer -D pulse sset Master 5%+ && pkill -RTMIN+1 i3blocks
-bindsym XF86AudioRaiseVolume exec amixer -D pulse sset Master 5%+
-#bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%- && pkill -RTMIN+1 i3blocks
-bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%-
+#volume up
+bindsym XF86AudioRaiseVolume exec pamixer -i 5 --allow-boost && dunstify -h string:x-dunst-stack-tag:volume volume: $(pamixer --get-volume)%
+#volume down
+bindsym XF86AudioLowerVolume exec pamixer -d 5 --allow-boost && dunstify -h string:x-dunst-stack-tag:volume volume: $(pamixer --get-volume)%
+#mute
+bindsym XF86AudioMute exec pamixer -t && dunstify -h string:x-dunst-stack-tag:mute mute: $(pamixer --get-mute)!
 
 # gradular volume control
-#bindsym $mod+XF86AudioRaiseVolume exec amixer -D pulse sset Master 1%+ && pkill -RTMIN+1 i3blocks
-bindsym $mod+XF86AudioRaiseVolume exec amixer -D pulse sset Master 1%+
-#bindsym $mod+XF86AudioLowerVolume exec amixer -D pulse sset Master 1%- && pkill -RTMIN+1 i3blocks
-bindsym $mod+XF86AudioLowerVolume exec amixer -D pulse sset Master 1%-
+bindsym $mod+XF86AudioRaiseVolume exec amixer -D pulse sset Master 1%+ && pkill -RTMIN+1 i3blocks
+bindsym $mod+XF86AudioLowerVolume exec amixer -D pulse sset Master 1%- && pkill -RTMIN+1 i3blocks
 
+# mute
+#bindsym XF86AudioMute exec amixer sset Master toggle && killall -USR1 i3blocks
 #mute
 #bindsym XF86AudioMute exec pamixer -t && notify-send "mute: $(pamixer --get-mute)"
-bindsym XF86AudioMute exec pamixer -t && notify-send "mute: $(pamixer --get-mute)"
 
 bindsym XF86AudioPlay exec playerctl play
-bindsym XF86AudioPause exec playerctl pause
+bindsym XF86AudioStop exec playerctl pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
-# Redirect sound to headphones [not working: to set later]
-#bindsym $mod+p exec /usr/local/bin/switch-audio-port
+# Redirect sound to headphones
+bindsym $mod+p exec /usr/local/bin/switch-audio-port
+
+# Power Profiles menu switcher (rofi)
+bindsym $mod+Shift+p exec ~/.config/i3/scripts/power-profiles
+
 
 ################################################################################################
 # Screen brightness controls
@@ -102,8 +106,10 @@ bindsym XF86AudioPrev exec playerctl previous
 #bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
 #bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 # Brightness bindings from peux os
-bindsym XF86MonBrightnessUp exec --no-startup-id bash $HOME/.config/system_scripts/brightness up
-bindsym XF86MonBrightnessDown exec --no-startup-id bash $HOME/.config/system_scripts/brightness down
+#bindsym XF86MonBrightnessUp exec --no-startup-id bash $HOME/.config/system_scripts/brightness up
+#bindsym XF86MonBrightnessDown exec --no-startup-id bash $HOME/.config/system_scripts/brightness down
+bindsym XF86MonBrightnessUp exec xbacklight +10
+bindsym XF86MonBrightnessDown exec xbacklight -10
 
 ################################################################################################
 # FOCUS and Layout
@@ -165,11 +171,11 @@ bindsym $mod+Shift+s move workspace to output right
 bindsym $mod+a focus parent
 
 # move the currently focused window to the scratchpad
-bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+Shift+m move scratchpad
 
 # Show the next scratchpad window or hide the focused scratchpad window.
 # If there are multiple scratchpad windows, this command cycles through them.
-bindsym $mod+minus scratchpad show
+bindsym $mod+m scratchpad show
 
 #navigate workspaces next / previous
 bindsym $mod+Ctrl+Right workspace next
@@ -189,21 +195,21 @@ set $ws3 "3:"
 set $ws4 "4:"
 set $ws5 "5:"
 set $ws6 "6:"
-set $ws7 "7:"
+set $ws7 "7:Music"
 set $ws8 "8:"
 set $ws9 "9:"
 #set $ws10 "10"
 
 # use workspaces on different displays:
-workspace $ws1 output eDP-1
-workspace $ws2 output eDP-1
-workspace $ws3 output eDP-1
-workspace $ws4 output eDP-1
-workspace $ws5 output eDP-1
+workspace $ws1 output eDP1
+workspace $ws2 output eDP1
+workspace $ws3 output eDP1
+workspace $ws4 output HDMI-1-0
+workspace $ws5 output HDMI-1-0
 workspace $ws6 output HDMI-1-0
-workspace $ws7 output HDMI-1-0
-workspace $ws8 output HDMI-1-0
-workspace $ws9 output HDMI-1-0
+workspace $ws7 output VDI-I-2-1
+workspace $ws8 output VDI-I-2-1
+workspace $ws9 output VDI-I-2-1
 #workspace $ws10 output HDMI-1-0
 
 # switch to workspace
@@ -324,7 +330,9 @@ assign [class="Thunderbird"] $ws4
 assign [class="TelegramDesktop"] $ws5
 assign [class="jetbrains-idea"] $ws6
 assign [class="Code"] $ws7
+assign [class="nuclear"] $ws7
 assign [class="(?!)Brave-browser"] $ws8
+assign [class="(?!)virtualbox"] $ws9
 
 # automatic set focus new window if it opens on another workspace then the current:
 for_window [class=Xfce4-terminal] focus
@@ -353,6 +361,7 @@ for_window [class="GParted"] floating enable border normal
 for_window [title="i3_help"] floating enable sticky enable border normal
 for_window [class="Lightdm-gtk-greeter-settings"] floating enable
 for_window [class="Lxappearance"] floating enable sticky enable border normal
+for_window [class="nuclear"] floating enable sticky enable border normal
 for_window [class="Manjaro-hello"] floating enable
 for_window [class="Manjaro Settings Manager"] floating enable border normal
 for_window [title="MuseScore: Play Panel"] floating enable
@@ -396,8 +405,8 @@ for_window [urgent=latest] focus
 bindsym $mod+Shift+e exec ~/.config/i3/scripts/powermenu
 
 # lock by blurring the screen:
-#bindsym $mod+Ctrl+l exec ~/.config/i3/scripts/blur-lock
-bindsym $mod+Ctrl+l exec i3exit lock
+bindsym $mod+Ctrl+l exec ~/.config/i3/scripts/blur-lock
+#bindsym $mod+Ctrl+l exec i3exit lock
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -409,7 +418,7 @@ bindsym $mod+Shift+r restart
 # bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # Set shut down, restart and locking features
-bindsym $mod+p mode "$mode_system"
+bindsym $mod+Ctrl+p mode "$mode_system"
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
 mode "$mode_system" {
     bindsym l exec --no-startup-id i3exit lock, mode "default"
@@ -489,7 +498,8 @@ bindsym $mod+Ctrl+F10 exec $myTerm -e cmatrix -C cyan
 
 #exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
-exec --no-startup-id nitrogen --restore; sleep 1; picom --config ~/.config/picom/picom-peux-os.conf
+exec --no-startup-id nitrogen --restore
+#exec --no-startup-id sleep 1; picom --config ~/.config/picom/picom-peux-os.conf
 
 exec_always --no-startup-id sleep 3 && $HOME/.config/conky/launch.sh
 
@@ -499,7 +509,7 @@ exec_always --no-startup-id sleep 3 && $HOME/.config/conky/launch.sh
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 # dex execute .desktop files
-exec --no-startup-id dex --autostart --environment i3
+#exec --no-startup-id dex --autostart --environment i3
 
 # start welcome app
 #exec --no-startup-id sh /usr/share/endeavouros/scripts/welcome --startdelay=3
@@ -511,23 +521,26 @@ exec --no-startup-id numlockx on
 #exec --no-startup-id setxkbmap -layout 'us,sk' -variant altgr-intl,qwerty -option 'grp:alt_caps_toggle'
 
 # start blueberry app for managing bluetooth devices from tray:
-exec --no-startup-id blueberry-tray
+exec --no-startup-id blueberry-tray &
 
 # Updater
-exec --no-startup-id pamac-tray
+exec --no-startup-id pamac-tray &
 
 # transparency
 #exec --no-startup-id sleep 1 &&  picom -CGb
 
 # networkmanager-applet
-exec --no-startup-id nm-applet
+exec --no-startup-id nm-applet &
 
 # volume
 # exec --no-startup-id pasystray
-exec --no-startup-id volumeicon
+#exec --no-startup-id volumeicon &
+
+#autotiling
+exec --no-startup-id autotiling
 
 # catfish
-bindsym control+mod1+c exec --no-startup-id catfish;focus
+#bindsym control+mod1+c exec --no-startup-id catfish;focus
 
 # Text Editor
 bindsym $mod+F2 exec --no-startup-id geany;focus
@@ -558,7 +571,7 @@ bindsym $mod+Shift+KP_Enter exec --no-startup-id thunar;focus
 bindsym control+mod1+b exec --no-startup-id thunar;focus
 
 # mail application
-bindsym $mod+F9 exec --no-startup-id evolution;focus
+#bindsym $mod+F9 exec --no-startup-id evolution;focus
 # bindsym $mod+F9 exec --no-startup-id geary;focus
 # bindsym control+mod1+e exec --no-startup-id geary;focus
 
@@ -569,7 +582,8 @@ bindsym $mod+F9 exec --no-startup-id evolution;focus
 exec --no-startup-id xset s 480 dpms 600 600 600
 
 # Desktop notifications
-exec --no-startup-id /usr/lib/xfce4/notifyd/xfce4-notifyd &
+#exec --no-startup-id /usr/lib/xfce4/notifyd/xfce4-notifyd &
+exec --no-startup-id dbus-launch dunst --config ~/.config/dunst/dunstrc
 
 exec --no-startup-id sleep 2 && $myTerm
 #exec --no-startup-id sleep 7 && firefox
@@ -665,55 +679,54 @@ mode "$mode_gaps_outer" {
 
 #########################################################################################################
 # bar settings eDP1#
-#########################################################################################################
-
+##########################################################################################################
 #bar {
-#	font pango:DejaVu Sans Mono 12
-#	status_command i3blocks -c ~/.config/i3/edp_i3blocks.conf
+#	font pango:DejaVu Sans Mono 12, FontAwesome 11
+#	status_command i3blocks -c ~/.config/i3/i3blocks.conf
 #    	position bottom
-#	output eDP-1
+#	output eDP1
 #	i3bar_command i3bar --transparency
 #	tray_output primary
 #	tray_padding 0
-
-        ##strip_workspace_numbers yes
+#
+#        #strip_workspace_numbers yes
 #        strip_workspace_name yes
-
+#
 #	    colors {
 #	        separator          $purple
 #	        background         $darkgrey
 #	        statusline         $white
-#           border 		        bg		txt		indicator
-		
+##           border 		        bg		txt		indicator
+#		
 #           focused_workspace	$mediumgrey	   	    $grey		$darkgrey	$purple
 #	        active_workspace	$lightblue      	$mediumgrey	$darkgrey	$purple
 #	        inactive_workspace	$darkgrey   		$darkgrey	$grey		$purple
 #	        urgent_workspace	$urgentred	    	$urgentred	$white		$purple
- #       }
+#        }
 #}
-
-#########################################################################################################
-# bar settings HDMI-1-0#
-#########################################################################################################
-
+#
+##########################################################################################################
+## bar settings HDMI-1-0#
+##########################################################################################################
+#
 #bar {
 #		font pango:DejaVu Sans Mono 12
 #		status_command          i3blocks -c ~/.config/i3/hdmi_i3blocks.conf
- #   	position                bottom
+#    	position                bottom
 #		output                  HDMI-1-0
 #	    i3bar_command           i3bar --transparency
 #	    tray_output primary
 #	    tray_padding 0
-
-        ##strip_workspace_numbers   yes
+#
+#        #strip_workspace_numbers   yes
 #        strip_workspace_name        yes
-
+#
 #	    colors {
 #	        separator          $purple
 #	        background         $darkgrey
 #	        statusline         $white
-#           border 		        bg		txt		indicator
-		
+##           border 		        bg		txt		indicator
+#		
 #           focused_workspace	$mediumgrey	   	    $grey		$darkgrey	$purple
 #	        active_workspace	$lightblue      	$mediumgrey	$darkgrey	$purple
 #	        inactive_workspace	$darkgrey   		$darkgrey	$grey		$purple
@@ -721,8 +734,11 @@ mode "$mode_gaps_outer" {
 #       }
 #}
 
-exec --no-startup-id tint2 -c ~/.config/tint2/i3/tint2rc
+# tint2
+exec --no-startup-id ~/.config/i3/scripts/display_setup.sh &
 
+## rofi bindings to manage clipboard (install rofi-greenclip from the AUR)
+exec --no-startup-id greenclip daemon>/dev/null
 
 
 

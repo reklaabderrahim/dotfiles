@@ -63,16 +63,12 @@ else:
 
     # stands for unknown status of battery
     FA_QUESTION = "<span font='FontAwesome'>\uf128</span>"
-    FA_BATTERY_LIMIT_60 = "<span font='FontAwesome'>\uf06d</span>"
 
 
     if state == "Discharging":
         fulltext = FA_BATTERY + " "
     elif state == "Full":
         fulltext = FA_PLUG + " "
-        timeleft = ""
-    elif state == "Unknown" and 55 <= percentleft <= 60:
-        fulltext = FA_BATTERY_LIMIT_60 + " " + FA_BATTERY + " "
         timeleft = ""
     elif state == "Unknown":
         fulltext = FA_QUESTION + " " + FA_BATTERY + " "
@@ -92,8 +88,6 @@ else:
             return config.get("color_40", "#FF9900")
         if percent < 50:
             return config.get("color_50", "#FFCC00")
-        if state == "Unknown" and 55 <= percent <= 60:
-            return config.get("color_eco", "#53A12C")
         if percent < 60:
             return config.get("color_60", "#FFFF00")
         if percent < 70:

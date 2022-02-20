@@ -31,7 +31,6 @@ my $t_warn = $ENV{T_WARN} || 70;
 my $t_crit = $ENV{T_CRIT} || 90;
 my $chip = $ENV{SENSOR_CHIP} || "";
 my $temperature = -9999;
-my $gpu_temp = -9999;
 my $label = "😀 ";
 
 sub help {
@@ -57,8 +56,6 @@ while (<SENSORS>) {
 }
 close(SENSORS);
 
-$gpu_temp = `nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits  |tr -d '\n'`;
-
 $temperature eq -9999 and die 'Cannot find temperature';
 
 if ($temperature < 45) {
@@ -74,9 +71,9 @@ if ($temperature < 45) {
 }
 # Print short_text, full_text
 print "${label}";
-print " $temperature°C - $gpu_temp.0°C\n";
+print " $temperature°C\n";
 print "${label}";
-print " $temperature.0°C - $gpu_temp.0°C\n";
+print " $temperature°C\n";
 
 # Print color, if needed
 if ($temperature >= $t_crit) {
